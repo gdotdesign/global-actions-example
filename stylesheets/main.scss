@@ -1,0 +1,29 @@
+.counter {
+  > * + * {
+    margin-left: 10px;
+  }
+}
+
+.counter-pair, .counter, .counter-list {
+  padding: 10px;
+  border: 1px solid #CCC;
+  margin: 5px;
+}
+
+button {
+  text-transform: uppercase;
+}
+
+ui-app {
+  overflow: auto;
+  height: 100vh;
+  display: block;
+}
+
+.counters {
+  display: flex;
+
+  > * {
+    flex: 1;
+  }
+}
