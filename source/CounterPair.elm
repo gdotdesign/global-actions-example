@@ -7,30 +7,26 @@ import Signal exposing (forwardTo)
 
 import Counter
 
-import Global
-
-type alias Model =
-  { counter1: Counter.Model
-  , counter2: Counter.Model
-  , globalAddress : Signal.Address Global.Action
+type alias Model a =
+  { counter1: Counter.Model a
+  , counter2: Counter.Model a
   }
 
 type Action
   = Counter1 Counter.Action
   | Counter2 Counter.Action
 
-init : Signal.Address Global.Action -> Model
-init globalAddress =
-  { counter1 = Counter.init globalAddress
-  , counter2 = Counter.init globalAddress
-  , globalAddress = globalAddress
+init : Signal.Address a -> a -> Model a
+init clickAddress clickAction =
+  { counter1 = Counter.init clickAddress clickAction
+  , counter2 = Counter.init clickAddress clickAction
   }
 
-counterCount : Model -> Int
+counterCount : Model a -> Int
 counterCount model =
   2
 
-update : Action -> Model -> Model
+update : Action -> Model a -> Model a
 update action model =
   case action of
     Counter1 act ->
@@ -38,7 +34,7 @@ update action model =
     Counter2 act ->
       { model | counter2 = Counter.update act model.counter2 }
 
-view : Signal.Address Action -> Model -> Html.Html
+view : Signal.Address Action -> Model a -> Html.Html
 view address model =
   div [class "counter-pair"]
     [ div []

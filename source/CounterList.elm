@@ -9,11 +9,11 @@ import Html.Events exposing (onClick)
 import Html exposing (div, span, strong, text, button)
 
 import CounterPair
-import Global
 
-type alias Model =
-  { counters : Array CounterPair.Model
-  , globalAddress : Signal.Address Global.Action
+type alias Model a =
+  { counters : Array (CounterPair.Model a)
+  , clickAddress : Signal.Address a
+  , clickAction : a
   }
 
 type Action
@@ -21,18 +21,19 @@ type Action
   | Add
   | Remove Int
 
-init : Signal.Address Global.Action -> Model
-init globalAddress =
+init : Signal.Address a -> a -> Model a
+init clickAddress clickAction =
   { counters = Array.fromList []
-  , globalAddress = globalAddress
+  , clickAddress = clickAddress
+  , clickAction = clickAction
   }
 
-counterCount : Model -> Int
+counterCount : Model a -> Int
 counterCount model =
   Array.map (\counters -> CounterPair.counterCount counters) model.counters
   |> Array.foldl (+) 0
 
-updateCounter : Int -> CounterPair.Action -> Array CounterPair.Model -> Array CounterPair.Model
+updateCounter : Int -> CounterPair.Action -> Array (CounterPair.Model a) -> Array (CounterPair.Model a)
 updateCounter index action counters =
   let
     updatedCounter counterIndex counter =
@@ -43,18 +44,18 @@ updateCounter index action counters =
   in
     Array.indexedMap updatedCounter counters
 
-update : Action -> Model -> Model
+update : Action -> Model a -> Model a
 update action model =
   case action of
     Add ->
-      { model | counters = Array.push (CounterPair.init model.globalAddress) model.counters}
+      { model | counters = Array.push (CounterPair.init model.clickAddress model.clickAction) model.counters}
     Remove index ->
       { model | counters = Array.Extra.removeAt index model.counters}
     Counter index act ->
       { model | counters = updateCounter index act model.counters }
 
 
-view : Signal.Address Action -> Model -> Html.Html
+view : Signal.Address Action -> Model a -> Html.Html
 view address model =
   let
     counter index counter =
